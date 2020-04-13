@@ -75,3 +75,28 @@ Rotate 30 degrees counterclockwise:
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Projection_Restore_1.png" alt="drawing" height="200"/>
 
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Projection_Restore_2.png" alt="drawing" height="200"/>
+
+
+## CH5 spatial domain image enhancement
+
+### Smooth average
+
+Kernel size 3:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/SmoothAvg.png" alt="drawing" height="200"/>
+
+Kernel size 5:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/SmoothAvg5.png" alt="drawing" height="200"/>
+
+Kernel size 7:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/SmoothAvg7.png" alt="drawing" height="200"/>
+
+### Smooth gaussian
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/SmoothGauss.png" alt="drawing" height="200"/>
+
+### Log edge detection
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/LogEdgeDetection.png" alt="drawing" height="200"/>
