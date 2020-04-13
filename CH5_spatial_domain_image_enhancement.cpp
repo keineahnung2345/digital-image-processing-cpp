@@ -258,6 +258,10 @@ void MedianFilterOp(cv::Mat& img, int kernelHeight, int kernelWidth,
     img = target;
 };
 
+// void LoGFilterOp(){
+//     //p.176, CH9
+// };
+
 void addNoise(cv::Mat& img, string mode = "gaussian", double mean = 0.0, double stddev = 0.0){
     //p.157, Matlab imnoise
     if(mode == "gaussian"){
@@ -282,6 +286,7 @@ int main(){
     cv::Mat img_gray = cv::imread("images/Lenna.png", 0);
     cv::Mat work_rgb = img_rgb.clone();
     cv::Mat work_gray = img_gray.clone();
+    bool isSave = false;
 
     map<string, Kernel*> kernels = {
         //p.147
@@ -289,20 +294,20 @@ int main(){
         , {"SmoothAvg5", new Kernel("SmoothAvg5", {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, 1.0/25)}
         , {"SmoothAvg7", new Kernel("SmoothAvg7", {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, 1.0/49)}
         , {"SmoothGauss", new Kernel("SmoothGauss", {1,2,1,2,4,2,1,2,1}, 1.0/16)}
-        , {"VerticalSobel", new Kernel("VerticalSobel", {-1,0,1, -2,0,2, -1,0,1}, 1.0)} //coef?
-        , {"HorizontalSobel", new Kernel("HorizontalSobel", {-1,-2,-1, 0,0,0, 1,2,1}, 1.0)}
+        // , {"SobelVertical", new Kernel("SobelVertical", {-1,0,1, -2,0,2, -1,0,1}, 1.0)} //coef?
+        // , {"SobelHorizontal", new Kernel("SobelHorizontal", {-1,-2,-1, 0,0,0, 1,2,1}, 1.0)}
         , {"LogEdgeDetection", new Kernel("LogEdgeDetection", {0,0,-1,0,0, 0,-1,-2,-1,0, -1,-2,16,-2,-1, 0,-1,-2,-1,0, 0,0,-1,0,0}, 1.0)}
-        , {"LaplacianEdgeDetection1", new Kernel("LaplacianEdgeDetection1", {0,-1,0, -1,4,-1, 0,-1,0}, 1.0)}
-        , {"LaplacianEdgeDetection2", new Kernel("LaplacianEdgeDetection2", {-1,-1,-1, -1,8,-1, -1,-1,-1}, 1.0)}
+        // , {"LaplacianEdgeDetection45", new Kernel("LaplacianEdgeDetection45", {0,-1,0, -1,4,-1, 0,-1,0}, 1.0)}
+        // , {"LaplacianEdgeDetection90", new Kernel("LaplacianEdgeDetection90", {-1,-1,-1, -1,8,-1, -1,-1,-1}, 1.0)}
     };
 
-    // for(auto it = kernels.begin(); it != kernels.end(); it++){
-    //     Kernel* kernel = it->second;
-    //     work_gray = img_gray.clone();
-    //     FilterOp(work_gray, {kernel}, true);
-    //     vector<cv::Mat> imgs = {img_gray, work_gray};
-    //     ShowHorizontal(imgs, kernel->name);
-    // }
+    for(auto it = kernels.begin(); it != kernels.end(); it++){
+        Kernel* kernel = it->second;
+        work_gray = img_gray.clone();
+        FilterOp(work_gray, {kernel}, true);
+        vector<cv::Mat> imgs = {img_gray, work_gray};
+        ShowHorizontal(imgs, kernel->name, isSave);
+    }
     
     cv::Mat noise = img_gray.clone();
     addNoise(noise, "gaussian", 0.0, 15.0);
@@ -318,7 +323,7 @@ int main(){
     cv::Mat median = img_gray.clone();
     MedianFilterOp(median, 3, 3, 1, 1, false, false);
     vector<cv::Mat> imgs = {noise, average, gaussian, median};
-    ShowHorizontal(imgs, "Average/Gaussian/Median");
+    ShowHorizontal(imgs, "Average vs Gaussian vs Median", isSave);
 
     //Sharpen, gradient kernels
     map<string, Kernel*> gradientKernels = {
@@ -326,8 +331,8 @@ int main(){
         {"RobertP45G", new Kernel("RobertP45G", {-1,0, 0,1}, 1.0, true)} //robert positive 45
         , {"RobertN45G", new Kernel("RobertN45G", {0,-1, 1,0}, 1.0, true)} //robert negative 45
         //p.165
-        , {"VerticalSobelG", new Kernel("VerticalSobelG", {-1,0,1, -2,0,2, -1,0,1}, 1.0, true)}
-        , {"HorizontalSobelG", new Kernel("HorizontalSobelG", {-1,-2,-1, 0,0,0, 1,2,1}, 1.0, true)}
+        , {"SobelVerticalG", new Kernel("SobelVerticalG", {-1,0,1, -2,0,2, -1,0,1}, 1.0, true)}
+        , {"SobelHorizontalG", new Kernel("SobelHorizontalG", {-1,-2,-1, 0,0,0, 1,2,1}, 1.0, true)}
         //p.167
         , {"Laplacian90", new Kernel("Laplacian90", {0,-1,0, -1,4,-1, 0,-1,0}, 1.0, true)}
         , {"Laplacian45", new Kernel("Laplacian45", {-1,-1,-1, -1,8,-1, -1,-1,-1}, 1.0, true)}
@@ -341,7 +346,7 @@ int main(){
     //     work_gray = img_gray.clone();
     //     FilterOp(work_gray, {kernel}, true, 0.0);
     //     vector<cv::Mat> imgs = {img_gray, work_gray};
-    //     ShowHorizontal(imgs, kernel->name);
+    //     ShowHorizontal(imgs, kernel->name, isSave);
     //     // Show(work_gray, kernel->name);
     // }
 
@@ -351,17 +356,17 @@ int main(){
     FilterOp(rn45g, {gradientKernels["RobertN45G"]}, true, 0.0);
     cv::Mat rpn45g = img_gray.clone();
     FilterOp(rpn45g, {gradientKernels["RobertP45G"], gradientKernels["RobertN45G"]}, true, 0.0);
-    // vector<cv::Mat> RobertImgs = {img_gray, rp45g, rn45g, rpn45g};
-    // ShowHorizontal(RobertImgs, "Robert P/N/P+N 45G");
+    vector<cv::Mat> RobertImgs = {img_gray, rp45g, rn45g, rpn45g};
+    ShowHorizontal(RobertImgs, "Robert P vs N vs P+N 45G", isSave);
 
     cv::Mat vsg = img_gray.clone();
-    FilterOp(vsg, {gradientKernels["VerticalSobelG"]}, true, 0.0);
+    FilterOp(vsg, {gradientKernels["SobelVerticalG"]}, true, 0.0);
     cv::Mat hsg = img_gray.clone();
-    FilterOp(hsg, {gradientKernels["HorizontalSobelG"]}, true, 0.0);
+    FilterOp(hsg, {gradientKernels["SobelHorizontalG"]}, true, 0.0);
     cv::Mat vhsg = img_gray.clone();
-    FilterOp(vhsg, {gradientKernels["VerticalSobelG"], gradientKernels["HorizontalSobelG"]}, true, 0.0);
-    // vector<cv::Mat> SobelImages = {img_gray, vsg, hsg, vhsg};
-    // ShowHorizontal(SobelImages, "Sobel V/H/V+H G");
+    FilterOp(vhsg, {gradientKernels["SobelVerticalG"], gradientKernels["SobelHorizontalG"]}, true, 0.0);
+    vector<cv::Mat> SobelImages = {img_gray, vsg, hsg, vhsg};
+    ShowHorizontal(SobelImages, "Sobel V vs H vs V+H G", isSave);
 
     cv::Mat l90 = img_gray.clone();
     FilterOp(l90, {gradientKernels["Laplacian90"]}, true, 0.0);
@@ -369,22 +374,22 @@ int main(){
     FilterOp(l45, {gradientKernels["Laplacian45"]}, true, 0.0);
     cv::Mat lw = img_gray.clone();
     FilterOp(lw, {gradientKernels["LaplacianWeighted"]}, true, 0.0);
-    // vector<cv::Mat> LaplacianImages = {img_gray, l90, l45, lw};
-    // ShowHorizontal(LaplacianImages, "Laplacian 90/45/Weighted G");
+    vector<cv::Mat> LaplacianImages = {img_gray, l90, l45, lw};
+    ShowHorizontal(LaplacianImages, "Laplacian 90 vs 45 vs Weighted G", isSave);
     
     
-    // cv::Mat rp45gEnhanced = img_gray.clone();
-    // FilterOp(rp45gEnhanced, {gradientKernels["RobertP45G"]}, true, 0.0, 1.8);
-    // vector<cv::Mat> RobertEnhancedImages = {img_gray, rp45g, rp45gEnhanced};
-    // ShowHorizontal(RobertEnhancedImages, "RobertP45G/Enhanced G");
+    cv::Mat rp45gEnhanced = img_gray.clone();
+    FilterOp(rp45gEnhanced, {gradientKernels["RobertP45G"]}, true, 0.0, 1.8);
+    vector<cv::Mat> RobertEnhancedImages = {img_gray, rp45g, rp45gEnhanced};
+    ShowHorizontal(RobertEnhancedImages, "RobertP45G vs Enhanced G", isSave);
     
-    // cv::Mat vsgEnhanced = img_gray.clone();
-    // FilterOp(vsgEnhanced, {gradientKernels["VerticalSobelG"]}, true, 0.0, 1.8);
-    // vector<cv::Mat> VerticalSobelEnhancedImages = {img_gray, vsg, vsgEnhanced};
-    // ShowHorizontal(VerticalSobelEnhancedImages, "VerticalSobelG/Enhanced G");
+    cv::Mat vsgEnhanced = img_gray.clone();
+    FilterOp(vsgEnhanced, {gradientKernels["SobelVerticalG"]}, true, 0.0, 1.8);
+    vector<cv::Mat> SobelVerticalEnhancedImages = {img_gray, vsg, vsgEnhanced};
+    ShowHorizontal(SobelVerticalEnhancedImages, "SobelVerticalG vs Enhanced G", isSave);
 
-    // cv::Mat lwEnhanced = img_gray.clone();
-    // FilterOp(lwEnhanced, {gradientKernels["LaplacianWeighted"]}, true, 0.0, 1.8);
-    // vector<cv::Mat> LaplacianEnhancedImages = {img_gray, lw, lwEnhanced};
-    // ShowHorizontal(LaplacianEnhancedImages, "Laplacian Weighted/Enhanced G");
+    cv::Mat lwEnhanced = img_gray.clone();
+    FilterOp(lwEnhanced, {gradientKernels["LaplacianWeighted"]}, true, 0.0, 1.8);
+    vector<cv::Mat> LaplacianEnhancedImages = {img_gray, lw, lwEnhanced};
+    ShowHorizontal(LaplacianEnhancedImages, "Laplacian Weighted vs Enhanced G", isSave);
 }
