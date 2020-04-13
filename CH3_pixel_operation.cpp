@@ -221,12 +221,12 @@ bool Histst(cv::Mat& img, cv::Mat& stdImg){
     return Histst(img, stdHist);
 };
 
-void ShowHist(vector<double>& hist){
+void DrawHist(vector<double>& hist, cv::Mat& histImage, int img_h = 400){
     //output image size
-    int img_w = 512; int img_h = 400;
+    int img_w = img_h;
     int bin_w = (int)((double)img_w/hist.size());
 
-    cv::Mat histImage(img_h, img_w, CV_8UC3, cv::Scalar( 0,0,0));
+    histImage = cv::Mat(img_h, img_w, CV_8UC1, cv::Scalar(0));
 
     /// Normalize the result to [ 0, histImage.rows ]
     cv::normalize(hist, hist, 0, histImage.rows, cv::NORM_MINMAX, -1, cv::Mat() );
@@ -236,16 +236,12 @@ void ShowHist(vector<double>& hist){
     {
         cv::line(histImage, cv::Point(bin_w*(i-1), img_h - hist[i-1]) ,
                         cv::Point(bin_w*(i), img_h - hist[i]),
-                        cv::Scalar(255, 255, 255), 2, 8, 0);
+                        cv::Scalar(255), 2, 8, 0);
     }
-
-    cv::namedWindow("Histogram", cv::WINDOW_AUTOSIZE);// Create a window for display.
-    cv::imshow("Histogram", histImage);                   // Show our image inside it.
-    cv::waitKey(0);
-    cv::destroyAllWindows();
 };
 
 int main(){
+    bool isSave = false;
     cv::Mat img = cv::imread("images/Lenna.png", 0);
     cv::Mat work = img.clone();
 
@@ -255,7 +251,9 @@ int main(){
     cin >> threshold;
     work = img.clone();
     Threshold(work, threshold);
-    Show(work, "Threshold");
+    // Show(work, "Threshold", isSave);
+    vector<cv::Mat> thresholdImgs = {img, work};
+    ShowHorizontal(thresholdImgs, string("Threshold") + "_" + to_string(threshold), isSave);
 
     //LinTran
     cout << "Please input dFa and dFb for linear transform..." << endl;
@@ -263,7 +261,10 @@ int main(){
     cin >> dFa >> dFb;
     work = img.clone();
     LinTran(work, dFa, dFb);
-    Show(work, "Linear Transform");
+    // Show(work, "Linear Transform", isSave);
+    vector<cv::Mat> linTranImgs = {img, work};
+    string linTranTitle = string("Linear Transform") + " " + to_string_with_precision(dFa, 2) + " " + to_string_with_precision(dFb, 2);
+    ShowHorizontal(linTranImgs, linTranTitle, isSave);
 
     // //GammaTran
     cout << "Please input gamma and comp for gamma transform..." << endl;
@@ -271,7 +272,10 @@ int main(){
     cin >> gamma >> comp;
     work = img.clone();
     GammaTran(work, gamma, comp);
-    Show(work, "Gamma Transform");
+    // Show(work, "Gamma Transform", isSave);
+    vector<cv::Mat> gammaTranImgs = {img, work};
+    string gammaTranTitle = string("Gamma Transform") + " " + to_string_with_precision(gamma, 2) + " " + to_string_with_precision(comp, 2);
+    ShowHorizontal(gammaTranImgs, gammaTranTitle, isSave);
 
     //LogTran
     cout << "Please input dC for log transform..." << endl;
@@ -279,7 +283,10 @@ int main(){
     cin >> dC;
     work = img.clone();
     LogTran(work, dC);
-    Show(work, "Log Transform");
+    // Show(work, "Log Transform", isSave);
+    vector<cv::Mat> logTranImgs = {img, work};
+    string logTranTitle = string("Log Transform") + " " + to_string_with_precision(dC, 2);
+    ShowHorizontal(logTranImgs, "Log Transform", isSave);
 
     //ParLinTran
     cout << "Please input x1, x2, y1, y2 for partial linear transform..." << endl;
@@ -287,7 +294,10 @@ int main(){
     cin >> x1 >> x2 >> y1 >> y2;
     work = img.clone();
     ParLinTran(work, x1, x2, y1, y2);
-    Show(work, "Paritial Linear Transform");
+    // Show(work, "Paritial Linear Transform", isSave);
+    vector<cv::Mat> parLinTranImgs = {img, work};
+    string parLinTranTitle = string("Paritial Linear Transform") + " " + to_string(x1) + " " + to_string(x2) + " " + to_string(y1) + " " + to_string(y2);
+    ShowHorizontal(parLinTranImgs, parLinTranTitle, isSave);
     
     //Histogram equalization
     vector<double> hist;
@@ -296,25 +306,33 @@ int main(){
     cin >> n;
     work = img.clone();
     GenHist(work, hist, n);
-    ShowHist(hist);
-    Show(img, "Original");
+    // ShowHist(hist, isSave);
+    cv::Mat histImage;
+    DrawHist(hist, histImage, img.rows);
     Histeq(work);
-    Show(work, "Histogram Equalization");
+    // Show(img, "Original", isSave);
+    // Show(work, "Histogram Equalization", isSave);
+    vector<cv::Mat> HistEqImgs = {img, histImage, work};
+    string histEqTitle = string("Histogram Equalization") + " " + to_string(n);
+    ShowHorizontal(HistEqImgs, histEqTitle, isSave);
 
     //Histogram matching
     cv::Mat img_dark = cv::imread("images/dark.jfif", 0);
     cv::Mat img_light = cv::imread("images/light.jfif", 0);
-    Show(img, "Original");
-    cout << "Histogram matching to dark image..." << endl;
-    Show(img_dark, "Standard - Dark");
     work = img.clone();
     Histst(work, img_dark);
-    Show(work, "Histogram Matching - Dark");
-    cout << "Histogram matching to light image..." << endl;
-    Show(img_light, "Standard - Light");
+    // Show(img, "Original", isSave);
+    // Show(img_dark, "Dark Standard", isSave);
+    // Show(work, "Histogram Matching to Dark", isSave);
+    vector<cv::Mat> darkStdImgs = {img, img_dark, work};
+    ShowHorizontal(darkStdImgs, "Histogram Matching to Dark", isSave);
+
     work = img.clone();
     Histst(work, img_light);
-    Show(work, "Histogram Matching - Light");
+    // Show(img_light, "Light Standard", isSave);
+    // Show(work, "Histogram Matching to Light", isSave);
+    vector<cv::Mat> lightStdImgs = {img, img_light, work};
+    ShowHorizontal(lightStdImgs, "Histogram Matching to Light", isSave);
 
     return 0;
 }
