@@ -43,3 +43,35 @@ Set `x1`, `x2`, `y1`, `y2` as `20`, `50`, `100`, `200`:
 ### Histogram matching to light
 
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Histogram_Matching_to_Light.png" alt="drawing" height="200"/>
+
+## CH4 geometric transformation
+
+### Move
+
+Move `20` right and `50` down:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Move_20_50_rgb.png" alt="drawing" height="200"/>
+
+### Horizontal mirror
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Horizontal_Mirror_rgb.png" alt="drawing" height="200"/>
+
+### Vertical mirror
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Vertical_Mirror_rgb.png" alt="drawing" height="200"/>
+
+### Scale
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Scale_1.50_rgb.png" alt="drawing" height="200"/>
+
+### Rotate
+
+Rotate 30 degrees counterclockwise:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Rotate_30.00_rgb.png" alt="drawing" height="200"/>
+
+### Image projection restore
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Projection_Restore_1.png" alt="drawing" height="200"/>
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Projection_Restore_2.png" alt="drawing" height="200"/>
