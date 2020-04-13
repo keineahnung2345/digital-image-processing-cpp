@@ -100,3 +100,40 @@ Kernel size 7:
 ### Log edge detection
 
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/LogEdgeDetection.png" alt="drawing" height="200"/>
+
+### Average vs Gaussian vs Median filter
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Average_vs_Gaussian_vs_Median.png" alt="drawing" height="200"/>
+
+### Roberts cross gradient operator 
+
+Positive 45 degrees v.s. Negative 45 degrees v.s. Positive+Negative 45 degrees:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Robert_P_vs_N_vs_P%2BN_45G.png" alt="drawing" height="200"/>
+
+### Sobel gradient operator
+
+Vertical v.s. Horizontal v.s. Vertical+Horizontal:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Sobel_V_vs_H_vs_V%2BH_G.png" alt="drawing" height="200"/>
+
+
+### Laplacian operator
+
+90 degrees rotation isotropy v.s. 45 degrees rotation isotropy v.s. Weighted
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Laplacian_90_vs_45_vs_Weighted_G.png" alt="drawing" height="200"/>
+
+### Enhancement
+
+Roberts positive 45 degrees:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/RobertP45G_vs_Enhanced_G.png" alt="drawing" height="200"/>
+
+Sobel vertical:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/SobelVerticalG_vs_Enhanced_G.png" alt="drawing" height="200"/>
+
+Laplacian weighted:
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Laplacian_Weighted_vs_Enhanced_G.png" alt="drawing" height="200"/>
