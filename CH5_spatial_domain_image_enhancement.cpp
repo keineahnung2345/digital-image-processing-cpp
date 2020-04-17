@@ -282,9 +282,9 @@ void addNoise(cv::Mat& img, string mode = "gaussian", double mean = 0.0, double 
 };
 
 int main(){
-    cv::Mat img_rgb = cv::imread("images/Lenna.png");
+    cv::Mat img_color = cv::imread("images/Lenna.png");
     cv::Mat img_gray = cv::imread("images/Lenna.png", 0);
-    cv::Mat work_rgb = img_rgb.clone();
+    cv::Mat work_color = img_color.clone();
     cv::Mat work_gray = img_gray.clone();
     bool isSave = false;
 
