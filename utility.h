@@ -39,19 +39,42 @@ void stringReplace(string& base, string from, string to){
     }
 };
 
+void pad(cv::Mat& img, int padt, int padb, int padl, int padr, int mode = cv::BORDER_CONSTANT){
+    //https://docs.opencv.org/3.4/d2/de8/group__core__array.html#ga209f2f4869e304c82d07739337eae7c5
+    //mode could be cv::BORDER_CONSTANT, cv::BORDER_REPLICATE, ...
+    int channels = img.channels();
+    cv::Mat tmp;
+
+    if(channels == 1){
+        tmp = cv::Mat(cv::Size(img.cols+padl+padr, img.rows+padt+padb), CV_8UC1, cv::Scalar(0));
+    }else if(channels == 3){
+        tmp = cv::Mat(cv::Size(img.cols+padl+padr, img.rows+padt+padb), CV_8UC3, cv::Scalar(0));
+    }
+
+    if(mode == cv::BORDER_CONSTANT)
+        copyMakeBorder(img, tmp, padt, padb, padl, padr, cv::BORDER_CONSTANT, cv::Scalar(0));
+    else
+        copyMakeBorder(img, tmp, padt, padb, padl, padr, mode);
+    img = tmp;
+};
+
 void ConcatHorizontal(vector<cv::Mat>& imgs, cv::Mat& target){
+    int channels = imgs[0].channels();
     int finalHeight = 0; //largest height
     for(int i = 0; i < imgs.size(); i++){
         finalHeight = max(finalHeight, imgs[i].rows);
     }
-    target = cv::Mat(cv::Size(0, finalHeight), CV_8UC1, cv::Scalar(0));
+
+    if(channels == 1){
+        target = cv::Mat(cv::Size(0, finalHeight), CV_8UC1, cv::Scalar(0));
+    }else if(channels == 3){
+        target = cv::Mat(cv::Size(0, finalHeight), CV_8UC3, cv::Scalar(0));
+    }
+    
     for(int i = 0; i < imgs.size(); i++){
         if(imgs[i].rows < finalHeight){
             //padding for imgs[i]
-            int padh = finalHeight - imgs[i].rows;
-            cv::Mat tmp(cv::Size(imgs[i].cols, finalHeight), CV_8UC1, cv::Scalar(0));
-            copyMakeBorder(imgs[i], tmp, 0, padh, 0, 0, cv::BORDER_CONSTANT, cv::Scalar(0));
-            imgs[i] = tmp;
+            pad(imgs[i], 0, finalHeight - imgs[i].rows, 0, 0);
         }
         hconcat(target, imgs[i], target);
     }
@@ -82,17 +105,6 @@ void ShowHorizontal(vector<cv::Mat>& imgs, string title = "Display Window", bool
         cv::waitKey(0);
         cv::destroyAllWindows();
     }
-};
-
-void pad(cv::Mat& img, int padt, int padb, int padl, int padr, int mode = cv::BORDER_CONSTANT){
-    //https://docs.opencv.org/3.4/d2/de8/group__core__array.html#ga209f2f4869e304c82d07739337eae7c5
-    //mode could be cv::BORDER_CONSTANT, cv::BORDER_REPLICATE, ...
-    cv::Mat tmp(cv::Size(img.cols+padl+padr, img.rows+padt+padb), CV_8UC1, cv::Scalar(0));
-    if(mode == cv::BORDER_CONSTANT)
-        copyMakeBorder(img, tmp, padt, padb, padl, padr, cv::BORDER_CONSTANT, cv::Scalar(0));
-    else
-        copyMakeBorder(img, tmp, padt, padb, padl, padr, mode);
-    img = tmp;
 };
 
 template <typename T>
