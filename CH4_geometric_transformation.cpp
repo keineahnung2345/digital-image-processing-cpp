@@ -13,7 +13,7 @@ using namespace std;
 
 bool ImMove(cv::Mat& img, int tcol, int trow){
     //p.105
-    //img could be RGB or grayscale
+    //img could be color or grayscale
     //tcol: the translate distance across columns
     //trow: the translate distance across rows
     if(abs(tcol) >= img.cols || abs(trow) >= img.rows){
@@ -579,9 +579,9 @@ void fitBasePoints(cv::Mat& img, vector<vector<double>>& basePoints){
 };
 
 int main(){
-    cv::Mat img_rgb = cv::imread("images/Lenna.png");
+    cv::Mat img_color = cv::imread("images/Lenna.png");
     cv::Mat img_gray = cv::imread("images/Lenna.png", 0);
-    cv::Mat work_rgb = img_rgb.clone();
+    cv::Mat work_color = img_color.clone();
     cv::Mat work_gray = img_gray.clone();
     bool isSave = false;
 
@@ -590,27 +590,27 @@ int main(){
     int mx, my;
     cin >> mx >> my;
     string moveTitle = string("Move") + " " + to_string(mx) + " " + to_string(my);
-    work_rgb = img_rgb.clone();
-    ImMove(work_rgb, mx, my);
-    Show(work_rgb, moveTitle + " rgb", isSave);
+    work_color = img_color.clone();
+    ImMove(work_color, mx, my);
+    Show(work_color, moveTitle + " color", isSave);
     work_gray = img_gray.clone();
     ImMove(work_gray, mx, my);
     Show(work_gray, moveTitle + " gray", isSave);
 
     //Horizontal Mirror
     cout << "Horizontal Mirror" << endl;
-    work_rgb = img_rgb.clone();
-    HorMirror(work_rgb);
-    Show(work_rgb, "Horizontal Mirror rgb", isSave);
+    work_color = img_color.clone();
+    HorMirror(work_color);
+    Show(work_color, "Horizontal Mirror color", isSave);
     work_gray = img_gray.clone();
     HorMirror(work_gray);
     Show(work_gray, "Horizontal Mirror gray", isSave);
 
     //Vertical Mirror
     cout << "Vertical Mirror" << endl;
-    work_rgb = img_rgb.clone();
-    VerMirror(work_rgb);
-    Show(work_rgb, "Vertical Mirror rgb", isSave);
+    work_color = img_color.clone();
+    VerMirror(work_color);
+    Show(work_color, "Vertical Mirror color", isSave);
     work_gray = img_gray.clone();
     VerMirror(work_gray);
     Show(work_gray, "Vertical Mirror gray", isSave);
@@ -621,9 +621,9 @@ int main(){
     cin >> ratio;
     string scaleTitle = string("Scale") + " " + to_string_with_precision(ratio, 2);
     cout << "Scale" << endl;
-    work_rgb = img_rgb.clone();
-    Scale(work_rgb, ratio);
-    Show(work_rgb, scaleTitle + " rgb", isSave);
+    work_color = img_color.clone();
+    Scale(work_color, ratio);
+    Show(work_color, scaleTitle + " color", isSave);
     work_gray = img_gray.clone();
     Scale(work_gray, ratio);
     Show(work_gray, scaleTitle + " gray", isSave);
@@ -634,9 +634,9 @@ int main(){
     cin >> angle;
     string rotateTitle = string("Rotate") + " " + to_string_with_precision(angle, 2);
     cout << "Rotate" << endl;
-    work_rgb = img_rgb.clone();
-    Rotate(work_rgb, angle);
-    Show(work_rgb, rotateTitle + " rgb", isSave);
+    work_color = img_color.clone();
+    Rotate(work_color, angle);
+    Show(work_color, rotateTitle + " color", isSave);
     work_gray = img_gray.clone();
     Rotate(work_gray, angle);
     Show(work_gray, rotateTitle + " gray", isSave);
@@ -649,9 +649,9 @@ int main(){
     // int center_i, center_j;
     // cin >> center_i >> center_j;
     // cout << "Rotate" << endl;
-    // work_rgb = img_rgb.clone();
-    // Rotate(work_rgb, angle_any, center_i, center_j);
-    // Show(work_rgb, "Rotate around any point", isSave);
+    // work_color = img_color.clone();
+    // Rotate(work_color, angle_any, center_i, center_j);
+    // Show(work_color, "Rotate around any point", isSave);
     // work_gray = img_gray.clone();
     // Rotate(work_gray, angle_any, center_i, center_j);
     // Show(work_gray, "Rotate around any point", isSave);
