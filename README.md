@@ -137,3 +137,29 @@ Sobel vertical:
 Laplacian weighted:
 
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Laplacian_Weighted_vs_Enhanced_G.png" alt="drawing" height="200"/>
+
+## CH6 frequency domain image enhancement
+
+### Ideal low pass filter
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Ideal_Low_pass_filter.png" alt="drawing" height="200"/>
+
+### Gauss low pass filter
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Ideal_Low_pass_filter.png" alt="drawing" height="200"/>
+
+### Gauss high pass filter
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Gauss_High_pass_filter.png" alt="drawing" height="200"/>
+
+### Laplace filter
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Laplace_filter.png" alt="drawing" height="200"/>
+
+### Gauss band rejection filter
+
+Image and noised image in frequency domain:
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Image_and_noised_image_in_frequency_domain.png" alt="drawing" height="200"/>
+
+Filter and filterd image in frequency domain:
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Filter_and_filted_image_in_frequency_domain.png" alt="drawing" height="200"/>
+
+Before and after applying Gauss band rejection filter:
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Gauss_Band_Rejection_filter.png" alt="drawing" height="200"/>
+
