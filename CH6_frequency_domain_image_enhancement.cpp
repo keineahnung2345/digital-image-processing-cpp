@@ -590,7 +590,7 @@ int main(){
     //gaussBRF is in frequency domain, so isForward is true
     vv2Mat(FguassBRFed, gaussBRF, gaussBRF.size(), gaussBRF[0].size(), true);
     vector<cv::Mat> FgaussBRFimgs = {FgaussBRF, FguassBRFed};
-    ShowHorizontal(FgaussBRFimgs, "Filter and filted image in frequency domain", isSave);
+    ShowHorizontal(FgaussBRFimgs, "Filter and filterd image in frequency domain", isSave);
     vector<cv::Mat> gaussBRFeds = {periodicNoised, gaussBRFed};
     ShowHorizontal(gaussBRFeds, "Gauss Band Rejection filter", isSave);
 }
