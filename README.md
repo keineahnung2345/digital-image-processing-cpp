@@ -163,3 +163,25 @@ Filter and filterd image in frequency domain:
 Before and after applying Gauss band rejection filter:
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Gauss_Band_Rejection_filter.png" alt="drawing" height="200"/>
 
+## CH7 color image processing
+
+### CMY
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/CMY_vs_CMY_BACK_RGB.png" alt="drawing" height="200"/>
+
+### HSI
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/HSI_vs_HSI_BACK_RGB.png" alt="drawing" height="200"/>
+
+### HSV
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/HSV_vs_HSV_BACK_RGB.png" alt="drawing" height="200"/>
+
+### YUV
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/YUV_vs_YUV_BACK_RGB.png" alt="drawing" height="200"/>
+
+### YIQ
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/YIQ_vs_YIQ_BACK_RGB.png" alt="drawing" height="200"/>
+
+### Color compensating
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Before_and_after_compensating.png" alt="drawing" height="200"/>
+
+### Color balancing
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Before_and_after_color_balancing.png" alt="drawing" height="200"/>
