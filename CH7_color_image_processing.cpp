@@ -54,13 +54,22 @@ bool RGB2HSI(cv::Mat& img){ //?
             double S;
             double I = (R+G+B)/3.0; //[0,1]
 
+            // given in textbook??
+            // if(I < 0.078431){
+            //     S = 0;
+            // }else if(I > 0.92){
+            //     S = 0;
+            // }else{
+            //     S = 1 - 3*minColor/(R+G+B);
+            // }
+
             if(minColor == maxColor){
                 H = 0;
                 S = 0;
             }else{
                 //its unit is radiance
                 double cosVal = (R-G+R-B)/2.0 / sqrt((R-G)*(R-G) + (R-B)*(G-B) + eps);
-                double radiance = (abs(cosVal-1) < eps) ? 0.0 : (abs(cosVal-(-1)) < eps) ? M_PI : acos(radiance);
+                double radiance = (abs(cosVal-1) < eps) ? 0.0 : (abs(cosVal-(-1)) < eps) ? M_PI : acos(cosVal);
                 // double radiance = acos(radiance);
 
                 H = (B <= G) ? radiance : 2.0*M_PI - radiance; //[0,2.0*M_PI]
@@ -340,17 +349,183 @@ bool YIQ2RGB(cv::Mat& img){
     return true;
 };
 
-void compensate(cv::Mat& img){
+bool compensate(cv::Mat& img){
     //p.266
+    /*
+    select most red, green, blue points int the image and 
+    learn a linear transformation to convert them to true r,g,b
+    */
+    if(type2str(img.type()) != "8UC3") return false;
 
+    int rMaxR = INT_MIN;
+    int cMaxR = INT_MIN;
+    int rMaxG = INT_MIN;
+    int cMaxG = INT_MIN;
+    int rMaxB = INT_MIN;
+    int cMaxB = INT_MIN;
+    double maxR = std::numeric_limits<double>::lowest();
+    double maxG = std::numeric_limits<double>::lowest();
+    double maxB = std::numeric_limits<double>::lowest();
+
+    for(int row = 0; row < img.rows; row++){
+        for(int col = 0; col < img.cols; col++){
+            cv::Vec3b pixel = img.at<cv::Vec3b>(row, col);
+            double B = pixel[0];
+            double G = pixel[1];
+            double R = pixel[2];
+            
+            if(R > maxR){
+                rMaxR = row;
+                cMaxR = col;
+                maxR = R;
+            }
+            
+            if(G > maxG){
+                rMaxG = row;
+                cMaxG = col;
+                maxG = G;
+            }
+            
+            if(B > maxB){
+                rMaxB = row;
+                cMaxB = col;
+                maxB = B;
+            }
+        }
+    }
+
+    //old three point's rgb value
+    double r1 = maxR, g1 = img.at<cv::Vec3b>(rMaxR, cMaxR)[1], b1 = img.at<cv::Vec3b>(rMaxR, cMaxR)[0];
+    double r2 = img.at<cv::Vec3b>(rMaxG, cMaxG)[2], g2 = maxG, b2 = img.at<cv::Vec3b>(rMaxG, cMaxG)[0];
+    double r3 = img.at<cv::Vec3b>(rMaxB, cMaxB)[2], g3 = img.at<cv::Vec3b>(rMaxB, cMaxB)[1], b3 = maxB;
+
+    vector<vector<double>> A1 = {
+        {r1, r2, r3},
+        {g1, g2, g3},
+        {b1, b2, b3}
+    };
+
+    //which does the best?
+    //given by textbook, brightness will be lower?
+    double R = 0.3*r1 + 0.59*g1 + 0.11*b1;
+    double G = 0.3*r2 + 0.59*g2 + 0.11*b2;
+    double B = 0.3*r3 + 0.59*g3 + 0.11*b3;
+
+    //*3 to restore its brightness?
+    // double R = (0.3*r1 + 0.59*g1 + 0.11*b1)*3;
+    // double G = (0.3*r2 + 0.59*g2 + 0.11*b2)*3;
+    // double B = (0.3*r3 + 0.59*g3 + 0.11*b3)*3;
+
+    //assume each channel contribute same brightness?
+    // double R = (r1+b1+g1)/3.0;
+    // double G = (r2+b2+g2)/3.0;
+    // double B = (r3+b3+g3)/3.0;
+
+    //*3 to restore its brightness?
+    // double R = (r1+b1+g1);
+    // double G = (r2+b2+g2);
+    // double B = (r3+b3+g3);
+
+    vector<vector<double>> A2 = {
+        {R, 0, 0},
+        {0, G, 0},
+        {0, 0, B}
+    };
+
+    vector<vector<double>> invA1 = A1;
+    InvMat(invA1);
+    vector<vector<double>> invA2 = A2;
+    InvMat(invA2);
+    vector<vector<double>> C;
+    ProdMat(A1, invA2, C);
+    vector<vector<double>> invC = C;
+    InvMat(invC);
+
+    // cout << "A1" << endl;
+    // PrintMatrix(A1);
+
+    // cout << "A2" << endl;
+    // PrintMatrix(A2);
+
+    // cout << "invA2" << endl;
+    // PrintMatrix(invA2);
+
+    // cout << "C" << endl;
+    // PrintMatrix(C);
+
+    // cout << "invC" << endl;
+    // PrintMatrix(invC);
+
+    for(int row = 0; row < img.rows; row++){
+        for(int col = 0; col < img.cols; col++){
+            cv::Vec3b pixel = img.at<cv::Vec3b>(row, col);
+            double B = pixel[0];
+            double G = pixel[1];
+            double R = pixel[2];
+            
+            vector<vector<double>> oldColor = {{R}, {G}, {B}}; // 3 x 1 matrix
+            vector<vector<double>> newColor; //also a 3 x 1 matrix
+            // ProdMat(invC, oldColor, newColor);
+            ProdMat(invA1, oldColor, newColor);
+            oldColor = newColor;
+            ProdMat(A2, oldColor, newColor);
+
+            for(int i = 0; i < 3; i++){
+                newColor[i][0] = min(max((int)newColor[i][0], 0), 255); ;
+            }
+
+            // if(row == 0 && col % (img.cols/10) == 0){
+            //     cout << "old" << endl;
+            //     PrintMatrix(oldColor);
+            //     cout << "new" << endl;
+            //     PrintMatrix(newColor);
+            // }
+
+            img.at<cv::Vec3b>(row, col) = cv::Vec3b((int)newColor[2][0], (int)newColor[1][0], (int)newColor[0][0]);
+        }
+    }
+
+    return true;
 };
 
-void colorBalance(cv::Mat& img){
+bool colorBalance(cv::Mat& img){
     //p.268
+    //fix green color, do linear transform on red and blue to make the two chosen points "gray"
+    if(type2str(img.type()) != "8UC3") return false;
+
+    cv::Vec3b F1 = img.at<cv::Vec3b>(0, 0);
+    //select farther point to avoid "Floating point exception"
+    cv::Vec3b F2 = img.at<cv::Vec3b>(50, 50);
+    cv::Vec3b newF1(F1[1], F1[1], F1[1]);
+    cv::Vec3b newF2(F2[1], F2[1], F2[1]);
+    //red
+    double K1 = (double)(newF1[2]-newF2[2])/(double)(F1[2]-F2[2]);
+    double K2 = newF1[2] - K1 * F1[2];
+    //blue
+    double L1 = (double)(newF1[0]-newF2[0])/(double)(F1[0]-F2[0]);
+    double L2 = newF1[0] - L1 * F1[0];
+
+    for(int row = 0; row < img.rows; row++){
+        for(int col = 0; col < img.cols; col++){
+            cv::Vec3b pixel = img.at<cv::Vec3b>(row, col);
+            double B = pixel[0];
+            double G = pixel[1];
+            double R = pixel[2];
+
+            double newR = min(max((int)(K1 * R + K2), 0), 255); 
+            double newG = G;
+            double newB = min(max((int)(L1 * B + K2), 0), 255); 
+            
+            img.at<cv::Vec3b>(row, col) = cv::Vec3b((int)newB, (int)newG, (int)newR);
+        }
+    }
+
+    return true;
 };
 
 int main(){
     cv::Mat img_color = cv::imread("images/Lenna.png");
+    // cv::Mat img_color = cv::imread("images/rgb.png");
     cv::Mat work_color = img_color.clone();
     bool isSave = false;
 
@@ -389,4 +564,13 @@ int main(){
     vector<cv::Mat> yiqs = {work_color, yiq, yiq_back_color};
     ShowHorizontal(yiqs, "YIQ vs YIQ BACK RGB", isSave);
 
+    cv::Mat compensated = work_color.clone();
+    compensate(compensated);
+    vector<cv::Mat> compensateds = {work_color, compensated};
+    ShowHorizontal(compensateds, "Before and after compensating", isSave);
+
+    cv::Mat balanced = work_color.clone();
+    colorBalance(balanced);
+    vector<cv::Mat> balanceds = {work_color, balanced};
+    ShowHorizontal(balanceds, "Before and after color balancing", isSave);
 }
