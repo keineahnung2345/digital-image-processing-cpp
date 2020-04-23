@@ -8,6 +8,8 @@
 #include <cmath> //M_PI
 #include "utility.h"
 
+// #define MODE 1
+
 using namespace std;
 
 double eps = std::numeric_limits<double>::epsilon();
@@ -366,6 +368,9 @@ bool compensate(cv::Mat& img){
     double maxR = std::numeric_limits<double>::lowest();
     double maxG = std::numeric_limits<double>::lowest();
     double maxB = std::numeric_limits<double>::lowest();
+    double minR = std::numeric_limits<double>::max();
+    double minG = std::numeric_limits<double>::max();
+    double minB = std::numeric_limits<double>::max();
 
     for(int row = 0; row < img.rows; row++){
         for(int col = 0; col < img.cols; col++){
@@ -373,31 +378,59 @@ bool compensate(cv::Mat& img){
             double B = pixel[0];
             double G = pixel[1];
             double R = pixel[2];
-            
-            if(R > maxR){
+
+#if MODE == 1
+            if(R-(B+G) > maxR){
+#else
+            if(255-R+B+G < minR){
+#endif
                 rMaxR = row;
                 cMaxR = col;
-                maxR = R;
+#if MODE == 1
+                maxR = R-(B+G);
+#else
+                minR = 255-R+B+G;
+#endif
             }
-            
-            if(G > maxG){
+
+#if MODE == 1
+            if(G-(B+R) > maxG){
+#else
+            if(255-G+B+R < minG){
+#endif
                 rMaxG = row;
                 cMaxG = col;
-                maxG = G;
+#if MODE == 1
+                maxG = G-(B+R);
+#else
+                minG = 255-G+B+R;
+#endif
             }
             
-            if(B > maxB){
+#if MODE == 1
+            if(B-(R+G) > maxB){
+#else
+            if(255-B+R+G < minB){
+#endif
                 rMaxB = row;
                 cMaxB = col;
-                maxB = B;
+#if MODE == 1
+                maxB = B-(R+G);
+#else
+                minB = 255-B+R+G;
+#endif
             }
         }
     }
 
+    // cout << "Red: "   << rMaxR << " " << cMaxR << " " << maxR << " " << minR << endl;
+    // cout << "Green: " << rMaxG << " " << cMaxG << " " << maxG << " " << minG << endl;
+    // cout << "Blue: "  << rMaxB << " " << cMaxB << " " << maxB << " " << minB << endl;
+
     //old three point's rgb value
-    double r1 = maxR, g1 = img.at<cv::Vec3b>(rMaxR, cMaxR)[1], b1 = img.at<cv::Vec3b>(rMaxR, cMaxR)[0];
-    double r2 = img.at<cv::Vec3b>(rMaxG, cMaxG)[2], g2 = maxG, b2 = img.at<cv::Vec3b>(rMaxG, cMaxG)[0];
-    double r3 = img.at<cv::Vec3b>(rMaxB, cMaxB)[2], g3 = img.at<cv::Vec3b>(rMaxB, cMaxB)[1], b3 = maxB;
+    double r1 = img.at<cv::Vec3b>(rMaxR, cMaxR)[2], g1 = img.at<cv::Vec3b>(rMaxR, cMaxR)[1], b1 = img.at<cv::Vec3b>(rMaxR, cMaxR)[0];
+    double r2 = img.at<cv::Vec3b>(rMaxG, cMaxG)[2], g2 = img.at<cv::Vec3b>(rMaxG, cMaxG)[1], b2 = img.at<cv::Vec3b>(rMaxG, cMaxG)[0];
+    double r3 = img.at<cv::Vec3b>(rMaxB, cMaxB)[2], g3 = img.at<cv::Vec3b>(rMaxB, cMaxB)[1], b3 = img.at<cv::Vec3b>(rMaxB, cMaxB)[0];
 
     vector<vector<double>> A1 = {
         {r1, r2, r3},
@@ -465,10 +498,10 @@ bool compensate(cv::Mat& img){
             
             vector<vector<double>> oldColor = {{R}, {G}, {B}}; // 3 x 1 matrix
             vector<vector<double>> newColor; //also a 3 x 1 matrix
-            // ProdMat(invC, oldColor, newColor);
-            ProdMat(invA1, oldColor, newColor);
-            oldColor = newColor;
-            ProdMat(A2, oldColor, newColor);
+            ProdMat(invC, oldColor, newColor);
+            // ProdMat(invA1, oldColor, newColor);
+            // oldColor = newColor;
+            // ProdMat(A2, oldColor, newColor);
 
             for(int i = 0; i < 3; i++){
                 newColor[i][0] = min(max((int)newColor[i][0], 0), 255); ;
@@ -495,7 +528,8 @@ bool colorBalance(cv::Mat& img){
 
     cv::Vec3b F1 = img.at<cv::Vec3b>(0, 0);
     //select farther point to avoid "Floating point exception"
-    cv::Vec3b F2 = img.at<cv::Vec3b>(50, 50);
+    // cv::Vec3b F2 = img.at<cv::Vec3b>(50, 50);
+    cv::Vec3b F2 = img.at<cv::Vec3b>(0, 1);
     cv::Vec3b newF1(F1[1], F1[1], F1[1]);
     cv::Vec3b newF2(F2[1], F2[1], F2[1]);
     //red
@@ -524,53 +558,58 @@ bool colorBalance(cv::Mat& img){
 };
 
 int main(){
-    cv::Mat img_color = cv::imread("images/Lenna.png");
-    // cv::Mat img_color = cv::imread("images/rgb.png");
-    cv::Mat work_color = img_color.clone();
+    cv::Mat img_lenna = cv::imread("images/Lenna.png");
+    cv::Mat img_plane = cv::imread("images/plane.bmp");
+    cv::Mat img_rgb = cv::imread("images/rgb.tif");
     bool isSave = false;
 
-    cv::Mat cmy = work_color.clone();
+    cv::Mat cmy = img_lenna.clone();
     RGB2CMY(cmy);
     cv::Mat cmy_back_color = cmy.clone();
     CMY2RGB(cmy_back_color);
-    vector<cv::Mat> cmys = {work_color, cmy, cmy_back_color};
+    vector<cv::Mat> cmys = {img_lenna, cmy, cmy_back_color};
     ShowHorizontal(cmys, "CMY vs CMY BACK RGB", isSave);
 
-    cv::Mat hsi = work_color.clone();
+    cv::Mat hsi = img_lenna.clone();
     RGB2HSI(hsi);
     cv::Mat hsi_back_color = hsi.clone();
     HSI2RGB(hsi_back_color);
-    vector<cv::Mat> hsis = {work_color, hsi, hsi_back_color};
+    vector<cv::Mat> hsis = {img_lenna, hsi, hsi_back_color};
     ShowHorizontal(hsis, "HSI vs HSI BACK RGB", isSave);
 
-    cv::Mat hsv = work_color.clone();
+    cv::Mat hsv = img_lenna.clone();
     RGB2HSV(hsv);
     cv::Mat hsv_back_color = hsv.clone();
     HSV2RGB(hsv_back_color);
-    vector<cv::Mat> hsvs = {work_color, hsv, hsv_back_color};
+    vector<cv::Mat> hsvs = {img_lenna, hsv, hsv_back_color};
     ShowHorizontal(hsvs, "HSV vs HSV BACK RGB", isSave);
 
-    cv::Mat yuv = work_color.clone();
+    cv::Mat yuv = img_lenna.clone();
     RGB2YUV(yuv);
     cv::Mat yuv_back_color = yuv.clone();
     YUV2RGB(yuv_back_color);
-    vector<cv::Mat> yuvs = {work_color, yuv, yuv_back_color};
+    vector<cv::Mat> yuvs = {img_lenna, yuv, yuv_back_color};
     ShowHorizontal(yuvs, "YUV vs YUV BACK RGB", isSave);
 
-    cv::Mat yiq = work_color.clone();
+    cv::Mat yiq = img_lenna.clone();
     RGB2YIQ(yiq);
     cv::Mat yiq_back_color = yiq.clone();
     YIQ2RGB(yiq_back_color);
-    vector<cv::Mat> yiqs = {work_color, yiq, yiq_back_color};
+    vector<cv::Mat> yiqs = {img_lenna, yiq, yiq_back_color};
     ShowHorizontal(yiqs, "YIQ vs YIQ BACK RGB", isSave);
 
-    cv::Mat compensated = work_color.clone();
+    cv::Mat compensated = img_plane.clone();
     compensate(compensated);
-    vector<cv::Mat> compensateds = {work_color, compensated};
-    ShowHorizontal(compensateds, "Before and after compensating", isSave);
+    vector<cv::Mat> compensateds = {img_plane, compensated};
+    ShowHorizontal(compensateds, "plane before and after compensating", isSave);
 
-    cv::Mat balanced = work_color.clone();
+    cv::Mat rgbCompensated = img_rgb.clone();
+    compensate(rgbCompensated);
+    vector<cv::Mat> rgbCompensateds = {img_rgb, rgbCompensated};
+    ShowHorizontal(rgbCompensateds, "rgb before and after compensating", isSave);
+
+    cv::Mat balanced = img_plane.clone();
     colorBalance(balanced);
-    vector<cv::Mat> balanceds = {work_color, balanced};
+    vector<cv::Mat> balanceds = {img_plane, balanced};
     ShowHorizontal(balanceds, "Before and after color balancing", isSave);
 }
