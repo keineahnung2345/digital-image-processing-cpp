@@ -181,7 +181,9 @@ Before and after applying Gauss band rejection filter:
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/YIQ_vs_YIQ_BACK_RGB.png" alt="drawing" height="200"/>
 
 ### Color compensating
-<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Before_and_after_compensating.png" alt="drawing" height="200"/>
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/plane_before_and_after_compensating.png" alt="drawing" height="200"/>
+
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/rgb_before_and_after_compensating.png" alt="drawing" height="200"/>
 
 ### Color balancing
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Before_and_after_color_balancing.png" alt="drawing" height="200"/>
