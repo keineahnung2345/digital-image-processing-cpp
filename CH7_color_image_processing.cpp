@@ -6,7 +6,7 @@
 #include <iostream>
 #include <map>
 #include <cmath> //M_PI
-#include "utility.h"
+#include "CH7.h"
 
 // #define MODE 1
 
@@ -557,6 +557,7 @@ bool colorBalance(cv::Mat& img){
     return true;
 };
 
+#ifdef CH7
 int main(){
     cv::Mat img_lenna = cv::imread("images/Lenna.png");
     cv::Mat img_plane = cv::imread("images/plane.bmp");
@@ -613,3 +614,4 @@ int main(){
     vector<cv::Mat> balanceds = {img_plane, balanced};
     ShowHorizontal(balanceds, "Before and after color balancing", isSave);
 }
+#endif

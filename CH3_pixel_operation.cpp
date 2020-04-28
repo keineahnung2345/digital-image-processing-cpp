@@ -6,10 +6,11 @@
 #include <iostream>
 #include <map>
 #include "utility.h"
+#include "CH3.h"
 
 using namespace std;
 
-bool GenHist(cv::Mat& img, vector<double>& pdHist, int n = 256, bool normalize = true){
+bool GenHist(cv::Mat& img, vector<double>& pdHist, int n, bool normalize){
     //p.68
     //output is probability range from 0 to 1
     if(type2str(img.type()) != "8UC1") return false;
@@ -45,7 +46,7 @@ bool LinTran(cv::Mat& img, double dFa, double dFb){
     return true;
 };
 
-bool LogTran(cv::Mat& img, double dC = 10.0){
+bool LogTran(cv::Mat& img, double dC){
     //p.75
     if(type2str(img.type()) != "8UC1") return false;
     for(int i = 0; i < img.rows; i++){
@@ -221,7 +222,7 @@ bool Histst(cv::Mat& img, cv::Mat& stdImg){
     return Histst(img, stdHist);
 };
 
-void DrawHist(vector<double>& hist, cv::Mat& histImage, int img_h = 400){
+void DrawHist(vector<double>& hist, cv::Mat& histImage, int img_h){
     //output image size
     int img_w = img_h;
     int bin_w = (int)((double)img_w/hist.size());
@@ -240,6 +241,7 @@ void DrawHist(vector<double>& hist, cv::Mat& histImage, int img_h = 400){
     }
 };
 
+#ifdef CH3
 int main(){
     bool isSave = false;
     cv::Mat img = cv::imread("images/Lenna.png", 0);
@@ -266,7 +268,7 @@ int main(){
     string linTranTitle = string("Linear Transform") + " " + to_string_with_precision(dFa, 2) + " " + to_string_with_precision(dFb, 2);
     ShowHorizontal(linTranImgs, linTranTitle, isSave);
 
-    // //GammaTran
+    //GammaTran
     cout << "Please input gamma and comp for gamma transform..." << endl;
     double gamma, comp;
     cin >> gamma >> comp;
@@ -336,3 +338,4 @@ int main(){
 
     return 0;
 }
+#endif

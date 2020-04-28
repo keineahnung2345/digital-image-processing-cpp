@@ -7,11 +7,11 @@
 #include <map>
 #include <cmath> //M_PI
 #include <complex>
-#include "utility.h"
+#include "CH6.h"
 
 using namespace std;
 
-inline long GetFreqWidth(cv::Mat& img, bool isExtending = true){
+inline long GetFreqWidth(cv::Mat& img, bool isExtending){
     //p.209
 
     int orgW = img.cols;
@@ -26,7 +26,7 @@ inline long GetFreqWidth(cv::Mat& img, bool isExtending = true){
     return w;
 };
 
-inline long GetFreqHeight(cv::Mat& img, bool isExtending = true){
+inline long GetFreqHeight(cv::Mat& img, bool isExtending){
     //p.210
     int orgH = img.rows;
     int h = pow(2, floor(log2(orgH))); //cut height so that h is a power of 2
@@ -98,74 +98,7 @@ void IFFT(vector<complex<double>>& freqs, vector<complex<double>>& times, int r)
     }
 };
 
-template <typename T>
-double getNorm(vector<vector<T>>& vv, int row, int col){};
-
-template <typename T>
-double getNorm(vector<vector<T>>& vv, int row, int col);
-
-template<>
-inline double getNorm(vector<vector<double>>& vv, int row, int col) { return vv[row][col]; }
-
-template <>
-inline double getNorm(vector<vector<complex<double>>>& vv, int row, int col) { return sqrt(pow(vv[row][col].real(), 2) + pow(vv[row][col].imag(), 2)); }
-
-template <typename T>
-void vv2Mat(cv::Mat& img, vector<vector<T>>& vv, int h, int w, bool isForward){
-    /*
-    convert vector<vector<complex<double>>> to cv::Mat
-    used in FFT2 and IFFT2
-    if it's forward fourier transform, vv is of frequency domain;
-    if it's inverse fourier transform, vv is of time domain
-    */
-
-    //resize to padded (or cropped) size
-    img = cv::Mat(cv::Size(w, h), CV_8UC1, cv::Scalar(0));
-
-    //find max and min of amplitude
-    double maxAmp = std::numeric_limits<double>::lowest(), minAmp = std::numeric_limits<double>::max();
-    for(int row = 0; row < h; row++){
-        for(int col = 0; col < w; col++){
-            // double amp = sqrt(pow(vv[row][col].real(), 2) + pow(vv[row][col].imag(), 2));
-            double amp = getNorm(vv, row, col);
-            if(isForward){
-                amp /= 100.0; //?
-                amp = log2(1.0 + amp); //log transformation?
-            }
-            maxAmp = max(maxAmp, amp);
-            minAmp = min(minAmp, amp);
-        }
-    }
-
-    // cout << "amp range: " << "[" << minAmp << ", " << maxAmp << "]" << endl;
-    for(int row = 0; row < h; row++){
-        for(int col = 0; col < w; col++){
-            // double amp = sqrt(pow(vv[row][col].real(), 2) + pow(vv[row][col].imag(), 2));
-            double amp = getNorm(vv, row, col);
-            if(isForward){
-                amp /= 100.0; //?
-                amp = log2(1.0 + amp); //log transformation?
-            }
-            
-            //normalize to [0,255]
-            amp = (amp - minAmp)/(maxAmp - minAmp) * 255;
-            // cout << (int)amp << " ";
-
-            //move original point from left-top corner to the center
-            int targetRow, targetCol;
-            if(isForward){
-                targetRow = (row < h/2) ? (row + h/2) : (row - h/2);
-                targetCol = (col < w/2) ? (col + w/2) : (col - w/2);
-            }else{
-                targetRow = row;
-                targetCol = col;
-            }
-            img.at<uchar>(targetRow, targetCol) = (int)amp;
-        }
-    }
-};
-
-void FFT2(cv::Mat& img, bool isExtending, vector<vector<complex<double>>>& pOutput, char fillColor = 0xFF){ //0xFF: 8 bits
+void FFT2(cv::Mat& img, bool isExtending, vector<vector<complex<double>>>& pOutput, char fillColor){ //0xFF: 8 bits
     //p.200
     //it also does fftshift of Matlab
     //img is a grayscale image?
@@ -277,7 +210,7 @@ void IFFTShift(vector<vector<complex<double>>>& matrix){
     FFTShift(matrix);
 };
 
-void IFFT2(cv::Mat& img, vector<vector<complex<double>>>& pInput, long height, long width, long outHeight = 0, long outWidth = 0){
+void IFFT2(cv::Mat& img, vector<vector<complex<double>>>& pInput, long height, long width, long outHeight, long outWidth){
     //p.204
     /*
     we will process the top-left "width" and "height" part of img
@@ -360,7 +293,7 @@ void IFFT2(cv::Mat& img, vector<vector<complex<double>>>& pInput, long height, l
     */
 };
 
-void FreqFilt(cv::Mat& img, vector<vector<double>>& filter, char fillColor = 0xFF, bool isExtending = true){
+void FreqFilt(cv::Mat& img, vector<vector<double>>& filter, char fillColor, bool isExtending){
     //p.208
     long orgWidth = img.cols;
     long orgHeight = img.rows;
@@ -395,7 +328,7 @@ void FreqFilt(cv::Mat& img, vector<vector<double>>& filter, char fillColor = 0xF
     // cout << img.rows << " x " << img.cols << endl;
 };
 
-void FreqIdealLPF(cv::Mat& img, vector<vector<double>>& filter, double nFreq, bool isExtending = true){
+void FreqIdealLPF(cv::Mat& img, vector<vector<double>>& filter, double nFreq, bool isExtending){
     //p.214
     //we only use the input argument "img" to get its width and height
     //the generated filter's center is at left-top corner
@@ -424,7 +357,7 @@ void FreqIdealLPF(cv::Mat& img, vector<vector<double>>& filter, double nFreq, bo
     }
 };
 
-void FreqGaussLPF(cv::Mat& img, vector<vector<double>>& filter, double sigma, bool isExtending = true){
+void FreqGaussLPF(cv::Mat& img, vector<vector<double>>& filter, double sigma, bool isExtending){
     //p.219
     //sigma = 20, 40, 60, ...
     int width = GetFreqWidth(img, isExtending);
@@ -442,7 +375,7 @@ void FreqGaussLPF(cv::Mat& img, vector<vector<double>>& filter, double sigma, bo
     }
 };
 
-void FreqGaussHPF(cv::Mat& img, vector<vector<double>>& filter, int sigma, bool isExtending = true){
+void FreqGaussHPF(cv::Mat& img, vector<vector<double>>& filter, int sigma, bool isExtending){
     //p.223
     //sigma = 20, 40, 60, ...
     int width = GetFreqWidth(img, isExtending);
@@ -460,7 +393,7 @@ void FreqGaussHPF(cv::Mat& img, vector<vector<double>>& filter, int sigma, bool 
     }
 };
 
-void FreqLaplace(cv::Mat& img, vector<vector<double>>& filter, bool isExtending = true){
+void FreqLaplace(cv::Mat& img, vector<vector<double>>& filter, bool isExtending){
     //p.226
     int width = GetFreqWidth(img, isExtending);
     int height = GetFreqHeight(img, isExtending);
@@ -477,7 +410,7 @@ void FreqLaplace(cv::Mat& img, vector<vector<double>>& filter, bool isExtending 
     }
 };
 
-void FreqGaussBRF(cv::Mat& img, vector<vector<double>>& filter, double blockFreq, double blockWidth, bool isExtending = true){
+void FreqGaussBRF(cv::Mat& img, vector<vector<double>>& filter, double blockFreq, double blockWidth, bool isExtending){
     //p.229
     //band rejection filter, height and width and calculated from img
     int width = GetFreqWidth(img, isExtending);
@@ -503,7 +436,7 @@ void FreqGaussBRF(cv::Mat& img, vector<vector<double>>& filter, double blockFreq
     }
 };
 
-void addPeriodicNoise(cv::Mat& img, double amp = 20.0, double freq = 20.0){
+void addPeriodicNoise(cv::Mat& img, double amp, double freq){
     //p.229
     for(int r = 0; r < img.rows; r++){
         for(int c = 0; c < img.cols; c++){
@@ -515,6 +448,7 @@ void addPeriodicNoise(cv::Mat& img, double amp = 20.0, double freq = 20.0){
     }
 };
 
+#ifdef CH6
 int main(){
     // cv::Mat img_gray = cv::imread("images/Lenna.png", 0);
     cv::Mat img_gray = cv::imread("images/cat.jpeg", 0);
@@ -594,3 +528,4 @@ int main(){
     vector<cv::Mat> gaussBRFeds = {periodicNoised, gaussBRFed};
     ShowHorizontal(gaussBRFeds, "Gauss Band Rejection filter", isSave);
 }
+#endif

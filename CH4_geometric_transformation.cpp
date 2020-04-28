@@ -6,7 +6,7 @@
 #include <iostream>
 #include <map>
 #include <cmath> //M_PI
-#include "utility.h"
+#include "CH4.h"
 
 using namespace std;
 
@@ -437,6 +437,7 @@ void fitBasePoints(cv::Mat& img, vector<vector<double>>& basePoints){
     };
 };
 
+#ifdef CH4
 int main(){
     cv::Mat img_color = cv::imread("images/Lenna.png");
     cv::Mat img_gray = cv::imread("images/Lenna.png", 0);
@@ -589,6 +590,6 @@ int main(){
         ShowHorizontal(RestoredImages, string("Projection Restore") + " " + to_string(i), isSave);
     }
 
-
     return 0;
 }
+#endif

@@ -6,28 +6,12 @@
 #include <iostream>
 #include <map>
 #include <cmath> //M_PI
-#include "utility.h"
+#include "CH5.h"
 
 using namespace std;
 
-struct Kernel{
-    string name;
-    int kernelHeight;
-    int kernelWidth;
-    int kernelMiddleY;
-    int kernelMiddleX;
-    vector<float> arr;
-    float coef;
-    bool isGradient; //if its gradient, take abs() and then normalize the range to [0,255]
-
-    Kernel(string n, vector<float> a, float c, bool g = false) : name(n), arr(a), coef(c), isGradient(g){
-        kernelHeight = kernelWidth = (int)(sqrt(a.size()));
-        kernelMiddleY = kernelMiddleX = kernelHeight/2;
-    };
-};
-
-void FilterOp(cv::Mat& img, vector<Kernel*> kernels, bool padding = false, float adaptiveThreshold = 0.0,
-    float mixRatio = 0.0){
+void FilterOp(cv::Mat& img, vector<Kernel*> kernels, bool padding, float adaptiveThreshold,
+    float mixRatio){
     //p.146
     //Template, a.k.a. kernel
 
@@ -43,10 +27,13 @@ void FilterOp(cv::Mat& img, vector<Kernel*> kernels, bool padding = false, float
     float coef = kernels[0]->coef;
     bool isGradient = kernels[0]->isGradient;
 
+    // cout << "kh: " << kernelHeight << ", kw: " << kernelWidth << ", kmy: " << kernelMiddleY << ", kmx: " << kernelMiddleX << ", kcoef: " << coef << ", kg: " << isGradient << endl;
+
     vector<vector<float>> arrs;
     for(int i = 0; i < kernels.size(); i++){
         arrs.push_back(kernels[i]->arr);
     }
+    // cout << "arrs.size(): " << arrs.size() << endl;
 
     //source image
     int height = img.rows, width = img.cols;
@@ -112,19 +99,28 @@ void FilterOp(cv::Mat& img, vector<Kernel*> kernels, bool padding = false, float
             if(arrs.size() == 1){
                 for(int i = 0; i < kernelHeight; i++){
                     for(int j = 0; j < kernelWidth; j++){
-                        res += arrs[0][i*kernelWidth+j] * img.at<uchar>(y-kernelMiddleY+i, x-kernelMiddleX+j);
+                        res += arrs[0][i*kernelWidth+j] * (int)img.at<uchar>(y-kernelMiddleY+i, x-kernelMiddleX+j);
+                        // cout << arrs[0][i*kernelWidth+j] << " * " << (int)img.at<uchar>(y-kernelMiddleY+i, x-kernelMiddleX+j) << " | ";
                     }
                 }
+                // if(res != 0){
+                //     cout << "(" << y << ", " << x << ") res: " << res << endl;
+                // }
             }else{
                 //support for overlaying two kernel operation result
                 for(vector<float>& arr : arrs){
                     for(int i = 0; i < kernelHeight; i++){
                         for(int j = 0; j < kernelWidth; j++){
                             res += arr[i*kernelWidth+j] * img.at<uchar>(y-kernelMiddleY+i, x-kernelMiddleX+j);
+                            // cout << arr[i*kernelWidth+j] * img.at<uchar>(y-kernelMiddleY+i, x-kernelMiddleX+j) << " ";
                         }
                     }
                     //take abs() here!!, G = abs(Gx) + abs(Gy)!!
                     res = fabs(res);
+                    // cout << endl;
+                    // if(res != 0){
+                    //     cout << "(" << y << ", " << x << ") res: " << res << endl;
+                    // }
                 }
             }
 
@@ -191,7 +187,7 @@ void FilterOp(cv::Mat& img, vector<Kernel*> kernels, bool padding = false, float
 };
 
 void MedianFilterOp(cv::Mat& img, int kernelHeight, int kernelWidth, 
-    int kernelMiddleY, int kernelMiddleX, bool padding = false, bool adaptive = false){
+    int kernelMiddleY, int kernelMiddleX, bool padding, bool adaptive){
     //p.146
     //Template, a.k.a. kernel
 
@@ -262,7 +258,7 @@ void MedianFilterOp(cv::Mat& img, int kernelHeight, int kernelWidth,
 //     //p.176, CH9
 // };
 
-void addNoise(cv::Mat& img, string mode = "gaussian", double mean = 0.0, double stddev = 0.0){
+void addNoise(cv::Mat& img, string mode, double mean, double stddev){
     //p.157, Matlab imnoise
     if(mode == "gaussian"){
         std::default_random_engine generator;
@@ -281,6 +277,7 @@ void addNoise(cv::Mat& img, string mode = "gaussian", double mean = 0.0, double 
     }
 };
 
+#ifdef CH5
 int main(){
     cv::Mat img_color = cv::imread("images/Lenna.png");
     cv::Mat img_gray = cv::imread("images/Lenna.png", 0);
@@ -393,3 +390,4 @@ int main(){
     vector<cv::Mat> LaplacianEnhancedImages = {img_gray, lw, lwEnhanced};
     ShowHorizontal(LaplacianEnhancedImages, "Laplacian Weighted vs Enhanced G", isSave);
 }
+#endif
