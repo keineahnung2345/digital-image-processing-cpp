@@ -1,6 +1,24 @@
 # digital-image-processing-cpp
 cpp implementation for algorithms in the book "数字图像处理与机器视觉-Visual C++与Matlab实现"
 
+To compile `CH3_pixel_operation.cpp`:
+
+```sh
+./compile.sh -DCH3 CH3_pixel_operation.cpp utility.cpp
+```
+
+In which `-DCH3` activates the `main` function in the source file, otherwise `main` function is ignored. And this source file includes `utility.h`, so we need to compile `CH3_pixel_operation.cpp` with `utility.h`'s implementation, which is `utility.cpp`.
+
+Similar method for CH 4,5,6,7,8 to compile.
+
+To compile `CH9_image_segmentation.cpp`:
+
+```sh
+./compile.sh -DCH9 CH9_image_segmentation.cpp CH3_pixel_operation.cpp CH5_spatial_domain_image_enhancement.cpp CH8_morphology_image_processing.cpp utility.cpp
+```
+
+Because it includes the corresponding headers.
+
 ## CH3 pixel operation
 
 ### Threshold
