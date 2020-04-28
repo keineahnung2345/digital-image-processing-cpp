@@ -258,3 +258,29 @@ Before and after applying Gauss band rejection filter:
 
 ### Top-hat transform
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/top_hat.png" alt="drawing" height="200"/>
+
+## CH9 image segmentation
+
+### Edge detection using Prewitt operator
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/edge_Prewitt.png" alt="drawing" height="200"/>
+
+### Edge detection using Sobel operator
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/edge_sobel.png" alt="drawing" height="200"/>
+
+### Edge detection using LoG operator
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/edge_LoG.png" alt="drawing" height="200"/>
+
+### Canny edge detector
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/edge_Canny.png" alt="drawing" height="200"/>
+
+### Hough transformation for line detection
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/hough.png" alt="drawing" height="200"/>
+
+### Automatically choose threshold for binarization
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/auto_threshold.png" alt="drawing" height="200"/>
+
+### Region growing for image segmentation
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/region_grow.png" alt="drawing" height="200"/>
+
+### Region splitting(decomposing) for image segmentation
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/decompose.png" alt="drawing" height="200"/>
