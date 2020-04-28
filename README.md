@@ -205,3 +205,56 @@ Before and after applying Gauss band rejection filter:
 
 ### Color balancing
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/Before_and_after_color_balancing.png" alt="drawing" height="200"/>
+
+## CH8 morphology image processing
+
+### Erode using 3 x 3 square kernel and using cross kernel
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/erode_full_and_erode_cross.png" alt="drawing" height="200"/>
+
+### Dilate using 3 x 3 square kernel and using cross kernel
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/dilate_full_and_dilate_cross.png" alt="drawing" height="200"/>
+
+### Erode operation and open operation
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/erode_and_open.png" alt="drawing" height="200"/>
+
+### Dilate operation and close operation
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/dilate_and_close.png" alt="drawing" height="200"/>
+
+### Hit-or-miss transform with 50 x 50 square kernel
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/hit_or_miss_with_50x50_square.png" alt="drawing" height="200"/>
+
+### Extract boundary
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/extract_boundary.png" alt="drawing" height="200"/>
+
+### Trace boundary
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/trace_boundary.png" alt="drawing" height="200"/>
+
+### Fill region
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/fill_region.png" alt="drawing" height="200"/>
+
+### Label connected component
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/label_connected_component.png" alt="drawing" height="200"/>
+
+### Thining
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/thining.png" alt="drawing" height="200"/>
+
+### Pixelate
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/pixelate.png" alt="drawing" height="200"/>
+
+### Convex hull unconstrained and constrained(using bounding rectangle)
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/convex_unconstrained_and_constrained.png" alt="drawing" height="200"/>
+
+### Gray dilate
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/gray_dilated.png" alt="drawing" height="200"/>
+
+### Gray erode
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/gray_eroded.png" alt="drawing" height="200"/>
+
+### Gray opene
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/gray_opened.png" alt="drawing" height="200"/>
+
+### Gray close
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/gray_closed.png" alt="drawing" height="200"/>
+
+### Top-hat transform
+<img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/top_hat.png" alt="drawing" height="200"/>
