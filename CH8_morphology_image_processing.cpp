@@ -959,22 +959,24 @@ void Convex(cv::Mat& img, bool constrain){
             Erode(D1to4[i], convexKernels[i]);
             // cout << "hit or miss: " << width*height - cv::countNonZero(D1to4[i]) << " ";
             //union
-            cv::bitwise_and(D1to4[i], img, D1to4[i]);
+            // the text in the book says union with original "img"
+            // cv::bitwise_and(D1to4[i], img, D1to4[i]);
+            // , but the code in the book says union with "last" image
+            // , union with "last" image is the correct implementation
+            cv::bitwise_and(D1to4[i], last, D1to4[i]);
             // cout << width*height - cv::countNonZero(D1to4[i]) << endl;
             cv::bitwise_xor(D1to4[i], last, diff);
-            cv::bitwise_xor(D1to4[i], last2, diff2);
+            // cv::bitwise_xor(D1to4[i], last2, diff2);
             // cout << "diff in : " << cv::countNonZero(diff) << " pixels" << endl;
             // cout << "diff2 in : " << cv::countNonZero(diff2) << " pixels" << endl;
             // Show(D1to4[i], "convex process", false);
 
             //not converge if we only compare with "last"!?
             //so here we need to compare with both "last" and "last2"
-        }while(cv::countNonZero(diff) > 0 && cv::countNonZero(diff2) > 0);
+        // }while(cv::countNonZero(diff) > 0 && cv::countNonZero(diff2) > 0);
+        }while(cv::countNonZero(diff) > 0);
         
         // cout << "do " << iters << " iterations" << endl;
-        //union
-        cv::bitwise_and(D1to4[i], last, D1to4[i]);
-        cv::bitwise_and(D1to4[i], last2, D1to4[i]);
     }
 
     cv::Mat target(cv::Size(width, height), CV_8UC1, cv::Scalar(255));
