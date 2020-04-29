@@ -250,7 +250,7 @@ Before and after applying Gauss band rejection filter:
 ### Gray erode
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/gray_eroded.png" alt="drawing" height="200"/>
 
-### Gray opene
+### Gray open
 <img src="https://github.com/keineahnung2345/digital-image-processing-cpp/blob/master/images/result/gray_opened.png" alt="drawing" height="200"/>
 
 ### Gray close
